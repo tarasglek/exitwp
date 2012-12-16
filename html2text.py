@@ -483,7 +483,6 @@ class _html2text(HTMLParser.HTMLParser):
                 # handle some font attributes, but leave headers clean
                 self.handle_emphasis(start, tag_style, parent_style)
 
-        if tag == "code" and not self.pre: self.o('`') #TODO: `` `this` ``
         if tag == "abbr":
             if start:
                 self.abbr_title = None
@@ -589,7 +588,10 @@ class _html2text(HTMLParser.HTMLParser):
             else:
                 self.pre = 0
             self.p()
-            
+        if tag == "code" and not self.pre:
+            self.code = start
+            self.o('```')
+
     def pbr(self):
         if self.p_p == 0: self.p_p = 1
 
@@ -611,7 +613,7 @@ class _html2text(HTMLParser.HTMLParser):
                 if lstripped_data != '':
                     self.drop_white_space = 0
             
-            if puredata and not self.pre:
+            if puredata and not (self.pre or self.code):
                 data = re.sub('\s+', ' ', data)
                 if data and data[0] == ' ':
                     self.space = 1
@@ -627,6 +629,9 @@ class _html2text(HTMLParser.HTMLParser):
             
             if self.pre:
                 bq += "    "
+                data = data.replace("\n", "\n"+bq)
+
+            if self.code:
                 data = data.replace("\n", "\n"+bq)
             
             if self.start:
