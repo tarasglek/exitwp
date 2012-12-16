@@ -590,8 +590,8 @@ class _html2text(HTMLParser.HTMLParser):
             self.p()
         if tag == "code" and not self.pre:
             self.code = start
-            self.o('```')
-
+            self.o("\n```\n")
+            
     def pbr(self):
         if self.p_p == 0: self.p_p = 1
 
