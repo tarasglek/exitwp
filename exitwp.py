@@ -47,7 +47,7 @@ class ns_tracker_tree_builder(XMLTreeBuilder):
 
 
 def html2fmt(html, target_format):
-    #   html = html.replace("\n\n", '<br/><br/>')
+    html = html.replace("\n\n", '<br/><br/>')
     #   html = html.replace('<pre lang="xml">', '<pre lang="xml"><![CDATA[')
     #   html = html.replace('</pre>', ']]></pre>')
     if target_format == 'html':
