@@ -404,20 +404,11 @@ class _html2text(HTMLParser.HTMLParser):
                 self.quiet -= 1
 
     def handle_tag(self, tag, attrs, start):
+        #attrs = fixattrs(attrs)
         if attrs is None:
             attrs = {}
         else:
             attrs = dict(attrs)
-
-        if self.pre and not tag == "pre":
-            if start:
-                attrs_string = ""
-                for k, v in attrs.items():
-                    attrs_string += " " + k + "=\"" + v + "\""
-                self.o("<"+tag+attrs_string+">")
-            else:
-                self.o("</"+tag+">")
-            return None
 
         if options.google_doc:
             # the attrs parameter is empty for a closing tag. in addition, we
@@ -621,7 +612,7 @@ class _html2text(HTMLParser.HTMLParser):
                     self.drop_white_space = 0
             
             if puredata and not self.pre:
-#                data = re.sub('\s+', ' ', data)
+                data = re.sub('\s+', ' ', data)
                 if data and data[0] == ' ':
                     self.space = 1
                     data = data[1:]
