@@ -78,7 +78,7 @@ def parse_wp_xml(file):
         xml_items = c.findall('item')
         for i in xml_items:
             taxanomies = i.findall('category')
-            export_taxanomies = {}
+            export_taxanomies = {'category':['mozilla']}
             for tax in taxanomies:
                 if not "domain" in tax.attrib:
                     continue
