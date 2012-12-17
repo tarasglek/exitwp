@@ -13,7 +13,9 @@ target_format: markdown
 date_format: '%Y-%m-%d %H:%M:%S'
 
 # Try to download and reloacate all images locally to the blog.
-download_images: False
+#download_images: None
+# Only download images that start with the following prefix
+download_images: 'http://blog.mozilla.org/tglek/files/'
 
 # Item types we don't want to import.
 item_type_filter: {attachment, nav_menu_item}
@@ -33,6 +35,9 @@ taxonomies:
 # Replace certain patterns in body
 # Simply replace the key with its value
 body_replace: {
+              'http://blog.mozilla.org/tglek':'http://taras.glek.net/blog',
+              'https://blog.mozilla.org/tglek':'http://taras.glek.net/blog',
+
 #    '[python]': '{% codeblock lang:python %}',
 #    '[/python]': '{% endcodeblock %}',
 }

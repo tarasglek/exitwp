@@ -2,6 +2,7 @@
 
 from xml.etree.ElementTree import ElementTree, XMLTreeBuilder
 import os
+import os.path
 import codecs
 from datetime import datetime
 from glob import glob
@@ -15,6 +16,10 @@ from html2text import html2text_file
 
 '''
 exitwp - Wordpress xml exports to Jekykll blog format conversion
+
+TODO:
+Comments
+wp-hosted-files like telemetry graphs
 
 Tested with Wordpress 3.3.1 and jekyll 0.11.2
 
@@ -50,6 +55,9 @@ def html2fmt(html, target_format):
     html = html.replace("\n\n", '<br/><br/>')
     #   html = html.replace('<pre lang="xml">', '<pre lang="xml"><![CDATA[')
     #   html = html.replace('</pre>', ']]></pre>')
+    for key in body_replace:
+        html = html.replace(key, body_replace[key])
+
     if target_format == 'html':
         return html
     else:
@@ -105,8 +113,6 @@ def parse_wp_xml(file):
                 return result
 
             body = gi('content:encoded')
-            for key in body_replace:
-                body = body.replace(key, body_replace[key])
 
             img_srcs = []
             if body is not None:
@@ -114,7 +120,7 @@ def parse_wp_xml(file):
                     soup = BeautifulSoup(body)
                     img_tags = soup.findAll('img')
                     for img in img_tags:
-                        img_srcs.append(img['src'])
+                        img_srcs.append(img['src'].decode('utf-8'))
                 except:
                     print "could not parse html: " + body
             #print img_srcs
@@ -209,7 +215,7 @@ def write_jekyll(data, target_format):
         filename_parts.append(target_format)
         return ''.join(filename_parts)
 
-    def get_attachment_path(src, dir, dir_prefix='a'):
+    def get_attachment_path(src, dir, dir_prefix):
         try:
             files = attachments[dir]
         except KeyError:
@@ -290,11 +296,18 @@ def write_jekyll(data, target_format):
         if download_images:
             for img in i['img_srcs']:
                 try:
-                    urlretrieve(urljoin(data['header']['link'],
-                                        img.decode('utf-8')),
-                                get_attachment_path(img, i['uid']))
-                except:
-                    print "\n unable to download " + urljoin(data['header']['link'], img.decode('utf-8'))
+                    imgurl = urljoin(data['header']['link'],
+                                             img)
+                    if not imgurl.startswith(download_images):
+                        continue
+                    download_path = get_attachment_path(img, i['uid'], 'assets/images')
+                    if not os.path.exists(download_path):
+                        print 'downloading %s' % imgurl
+                        urlretrieve(imgurl, download_path)
+                    newpath = download_path[download_path.rfind('/assets/images'):]
+                    body_replace[imgurl] = newpath
+                except Exception, e:
+                    print ["\n unable to download " + urljoin(data['header']['link'], img), e]
 
         if out is not None:
             def toyaml(data):
