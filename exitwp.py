@@ -305,7 +305,7 @@ def write_jekyll(data, target_format):
                         print 'downloading %s' % imgurl
                         urlretrieve(imgurl, download_path)
                     newpath = download_path[download_path.rfind('/assets/images'):]
-                    body_replace[imgurl] = newpath
+                    i['body'] = i['body'].replace(imgurl, newpath)
                 except Exception, e:
                     print ["\n unable to download " + urljoin(data['header']['link'], img), e]
 
